@@ -29,6 +29,11 @@ def load_env():
                 os.environ.setdefault(key.strip(), value.strip().strip("'\""))
 
 
+def load_prompts():
+    """Both system prompts, used by the CLI runner and the Streamlit demo."""
+    return {name: (ROOT / "prompts" / f"{name}.md").read_text(encoding="utf-8") for name in ("first_pass", "follow_up")}
+
+
 def paced(model):
     """Space Gemini requests a few seconds apart; Groq rate limits are handled by retries."""
     global _last_request
@@ -71,8 +76,7 @@ def predict(args):
     api_key(args.model)  # Fail before any call if the model or its key is wrong.
     ids = read_ids(args.ids)
     calls = [call for call in validated_calls(read_jsonl(args.input)) if ids is None or call["transcript_id"] in ids]
-    prompts = {name: (ROOT / "prompts" / f"{name}.md").read_text(encoding="utf-8") for name in ("first_pass", "follow_up")}
-    settings = model_settings(args.model)
+    prompts, settings = load_prompts(), model_settings(args.model)
     run = {"model": args.model, "settings": settings, "ids": sorted(ids) if ids else None,
            "input_sha256": sha256(args.input.read_bytes()).hexdigest(),
            "prompts_sha256": sha256("".join(prompts.values()).encode()).hexdigest()}

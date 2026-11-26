@@ -29,7 +29,12 @@ def finalize_prediction(call, response, by_id=None):
 def merge_follow_up(call, first, second, by_id=None):
     """The first pass's answers with the second pass's reason and callback; claims count only when grounded."""
     by_id = by_id or turns_by_id(call)
-    reason, postponed, callback = second["final_reason"], second["postponement"], second["callback"]
+    reason, postponed = second["final_reason"], second["postponement"]
+    # The focused pass's callback wins when it found a timed one; otherwise keep the first pass's, which
+    # grounded_callback still has to verify (quoted proposal, the other speaker's direct reply).
+    callback = second["callback"] if second["callback"]["options"] else \
+        {**first["callback"], "vague_postponement": second["callback"]["vague_postponement"],
+         "deferral_turn": second["callback"]["deferral_turn"]}
     # F7: a grounded postponement sets the +3 day fallback whichever blocker owns the label. It may be the agent
     # restating the caller's deferral ("you can let me know"), so any speaker counts.
     deferral = postponed["present"] and grounded_turn(by_id, postponed["turn"], postponed["quote"])

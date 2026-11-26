@@ -9,7 +9,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 
-DEFAULT_MODEL = "groq/openai/gpt-oss-120b"
+DEFAULT_MODEL = "groq/openai/gpt-oss-20b"
 API_KEYS = {"groq": "GROQ_API_KEY", "gemini": "GEMINI_API_KEY"}
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/{}:generateContent"
