@@ -1,0 +1,19 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.env
+data/*
+outputs/*
+
+# Local secrets, environments, and generated files
+.env.*
+!.env.example
+venv/
+*.py[cod]
+.DS_Store
+.coverage
+htmlcov/
+
+# Internal development notes and evaluation details
+/PROJECT_HISTORY.md
+/ERROR_ANALYSIS.md
