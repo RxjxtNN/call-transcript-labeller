@@ -17,7 +17,7 @@ python label_calls.py score data/gold.jsonl outputs/predictions.jsonl
 
 | Option | Effect |
 |---|---|
-| `--model` | Default `groq/openai/gpt-oss-120b`. Use `gemini/gemini-3.5-flash-lite` for testing. |
+| `--model` | Default `groq/openai/gpt-oss-20b`. Use `gemini/gemini-3.5-flash-lite` for testing. |
 | `--ids FILE` | Label only the listed transcript IDs. |
 | `--resume` | Retry only the calls missing from `--out`, after checking that the input, IDs, prompts, model, and settings are unchanged. |
 
@@ -35,6 +35,13 @@ python detect_caller_gender.py data/input.jsonl --out outputs/caller_gender.json
 ```
 
 `rescore` re-applies the current Python rules to a run's saved model answers without calling a model, so a rule change can be checked for free.
+
+**Demo UI (optional).** A plain Streamlit page in `frontend_streamlitapp/` labels one pasted transcript with the same pipeline and shows the tags, the rules applied, and the quotes the model cited. It is the only part that needs a third-party package.
+
+```bash
+pip install -r frontend_streamlitapp/requirements.txt
+streamlit run frontend_streamlitapp/app.py
+```
 
 **Testing workflow.** Test changes with Gemini on a fixed random 15-call subset:
 
@@ -91,6 +98,7 @@ Groq free-tier limits:
 | `detect_caller_gender.py` | Caller gender cues without a model |
 | `tests/` | One offline test file per module |
 | `examples/demo_call.jsonl` | Synthetic call for a quick live check |
+| `frontend_streamlitapp/` | Optional Streamlit demo that reuses the labeler |
 | `data/`, `outputs/` | Local data and runs (Git-ignored); old runs are in `outputs/archive/` |
 
 ## Caller gender (separate task)
