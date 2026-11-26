@@ -56,6 +56,18 @@ class MergeTests(TestCase):
         self.assertEqual(finalize_prediction(record, merge_follow_up(record, first, ungrounded))[0]["sub_disposition"],
                          "Cost Concern")
 
+    def test_first_pass_callback_survives_when_second_pass_finds_none(self):
+        # Demo-call pattern: the first pass found "Call tomorrow at four?" / "Okay, I'll call tomorrow at four.",
+        # the second pass returned no agreement. The grounded first-pass callback must not be dropped.
+        from helpers import agreed, demo_call, option
+        record = demo_call()
+        first = response(blockers=["Cost Concern"], callback=agreed(
+            1, "Call tomorrow at four?", 2, "Okay, I'll call tomorrow at four.", option("days", 1, "16:00", "tomorrow at four")))
+        answer = second("Cost Concern", 1, "afford the fee")
+        prediction, _ = finalize_prediction(record, merge_follow_up(record, first, answer))
+        self.assertEqual((prediction["sub_disposition"], prediction["next_call_at"]),
+                         ("Cost Concern", "2026-11-10T16:00:00+05:30"))
+
     def test_blocker_keeps_label_while_postponement_sets_three_day_fallback(self):
         record = call("Agent: Shall we book?\nCustomer: I will consult my wife and let you know.")
         answer = second("Family Discussion", 2, "consult my wife", {"present": True, "turn": 2, "quote": "let you know"})
